@@ -4,7 +4,7 @@
  * Copyright(c) 2017 Bradford Knowlton
  * MIT Licensed
  *
- * Version 1.0.2
+ * Version 1.0.3
  */
 
 'use strict'
@@ -60,6 +60,21 @@ exports.putCache = function(key, data){
 	cacheDb.serialize(function() { 
 		
 		var stmt = cacheDb.prepare("INSERT OR REPLACE INTO `cache`(`ID`,`key`,`data`,`date_created`) VALUES ( NULL, (?), (?), datetime('now') );");
+
+		stmt.run( key, data );
+        
+      	stmt.finalize();
+
+	});
+
+	cacheDb.close();
+}
+
+exports.purgeCache = function(key, data){
+
+	cacheDb.serialize(function() { 
+		
+		var stmt = cacheDb.prepare("");
 
 		stmt.run( key, data );
         
