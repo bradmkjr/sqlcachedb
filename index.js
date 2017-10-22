@@ -4,7 +4,7 @@
  * Copyright(c) 2017 Bradford Knowlton
  * MIT Licensed
  *
- * Version 1.0.6
+ * Version 1.0.7
  */
 
 'use strict';
@@ -24,6 +24,13 @@ exports.sqlCacheDb = function(){
 
 };
 
+/**
+* getCache
+* Gets the cache data based on a key.
+*
+* @param   {string} key Value for lookup in database.
+* @returns {string} data Value from database or null.
+*/
 exports.getCache = function(key){
 	// query database for data based on key with date within lifetime
 	var query = cacheDb.prepare('SELECT * FROM `cache` WHERE `key` = "(?)"', key);
@@ -44,6 +51,12 @@ exports.getCache = function(key){
 	cacheDb.close();
 };
 
+/**
+* getKeys
+* Gets all the keys in the cache.
+*
+* @returns {Array} list of keys in cache.
+*/
 exports.getKeys = function(){
 	// query database for all keys
 	var query = cacheDb.prepare('SELECT keys FROM `cache`');
@@ -62,6 +75,12 @@ exports.getKeys = function(){
 	return keys;
 };
 
+/**
+* getActiveKeys
+* Gets all the keys in the cache recently set.
+*
+* @returns {Array} list of keys in cache.
+*/
 exports.getActiveKeys = function(){
 	// query database for all active keys
 	var query = cacheDb.prepare('SELECT keys FROM `cache` WHERE `date_updated` != "" ');

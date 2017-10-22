@@ -1,6 +1,6 @@
 {
   "name": "sqlcachedb",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Using SQLite database for a persistant object cache.",
   "main": "index.js",
   "scripts": {
@@ -29,6 +29,7 @@
     "sqlite3": "^3.1.13"
   },
   "devDependencies": {
-    "eslint": "^4.9.0"
+    "eslint": "^4.9.0",
+    "eslint-plugin-jsdoc": "^3.1.3"
   }
 }
