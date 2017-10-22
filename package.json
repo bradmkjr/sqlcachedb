@@ -1,0 +1,26 @@
+{
+  "name": "sqlcachedb",
+  "version": "1.0.0",
+  "description": "Using SQLite database for a persistant object cache.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bradmkjr/sqlcachedb.git"
+  },
+  "keywords": [
+    "sqlite",
+    "memcache",
+    "memcached",
+    "persistant",
+    "storage"
+  ],
+  "author": "Bradford Knowlton",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bradmkjr/sqlcachedb/issues"
+  },
+  "homepage": "https://github.com/bradmkjr/sqlcachedb#readme"
+}
