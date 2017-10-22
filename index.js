@@ -4,13 +4,30 @@
  * Copyright(c) 2017 Bradford Knowlton
  * MIT Licensed
  *
- * Version 1.0.1
+ * Version 1.0.2
  */
 
 'use strict'
 
 var sqlite3 = require('sqlite3');
 var cacheDb = new sqlite3.Database('./data/database.db');
+
+exports.sqlCacheDb = function(){
+
+	cacheDb.serialize(function() {
+	  cacheDb.run('CREATE TABLE "cache" (
+		`ID`	INTEGER PRIMARY KEY AUTOINCREMENT,
+		`key`	TEXT UNIQUE,
+		`data`	TEXT,
+		`date_created`	TEXT,
+		`date_updated`	TEXT
+	);');
+	 
+	});
+	 
+	cacheDb.close();
+
+}
 
 exports.getCache = function(key){
 
