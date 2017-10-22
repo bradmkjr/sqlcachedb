@@ -5,6 +5,23 @@ Using SQLite database for a persistant object cache. This packaged is designed t
 
 # Usage
 
+
+```javascript
+var cache = require('sqlcachedb');
+
+cache.setCache('url','https://github.com', function(){
+
+	cache.getCache('url', function(err,data){
+		console.log(data);
+	});
+
+});
+
+cache.getCache('url', function(err,data){
+	console.log(data);
+});
+```
+
 **Note:** This package is in Alpha stages, probably should not have been published to the repository in it's current state.
 
 caveat emptor
