@@ -12,7 +12,7 @@
 var sqlite3 = require('sqlite3');
 var cacheDb = new sqlite3.Database('./data/database.db');
 
-function getCache(key){
+exports.getCache = function(key){
 
 	var query = cacheDb.prepare("SELECT * FROM `cache` WHERE `key` = '(?)'", key);
 
@@ -38,7 +38,7 @@ function getCache(key){
 
 }
 
-function putCache(key, data){
+exports.putCache = function(key, data){
 
 	cacheDb.serialize(function() { 
 		
