@@ -4,7 +4,7 @@
  * Copyright(c) 2017 Bradford Knowlton
  * MIT Licensed
  *
- * Version 1.0.3
+ * Version 1.0.4
  */
 
 'use strict'
