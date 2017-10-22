@@ -1,6 +1,6 @@
 {
   "name": "sqlcachedb",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Using SQLite database for a persistant object cache.",
   "main": "index.js",
   "scripts": {
