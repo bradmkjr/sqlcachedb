@@ -4,7 +4,7 @@
  * Copyright(c) 2017 Bradford Knowlton
  * MIT Licensed
  *
- * Version 1.1.2
+ * Version 1.1.3
  */
 
 'use strict';
@@ -75,6 +75,20 @@ exports.setCache = function(key, data, callback){
 exports.purgeCache = function(callback){
 	cacheDb.serialize(function() { 		
 		cacheDb.run('DELETE FROM `cache`', function(){
+			callback();	
+		});
+	});
+};
+
+/**
+* purgeKey
+* removes a key from cache
+*
+* @param   {function} callback function name for callback
+*/
+exports.purgeKey = function(key,callback){
+	cacheDb.serialize(function() { 		
+		cacheDb.run('DELETE FROM `cache` WHERE `key` == ?', key, function(){
 			callback();	
 		});
 	});
