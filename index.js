@@ -4,7 +4,7 @@
  * Copyright(c) 2017 Bradford Knowlton
  * MIT Licensed
  *
- * Version 1.1.1
+ * Version 1.1.2
  */
 
 'use strict';
@@ -12,7 +12,8 @@
 var sqlite3 = require('sqlite3');
 var cacheDb = new sqlite3.Database( __dirname + '/data/database.db');
 
-// var cacheLifetime = '-6 hours';
+// default age for active cache entries
+var cacheLifetime = '-6 hours';
 
 exports.sqlCacheDb = function(){
 	// Create the database table if it doesn't exist
@@ -26,21 +27,19 @@ exports.sqlCacheDb = function(){
 * Gets the cache data based on a key.
 *
 * @param   {string} key Value for lookup in database.
-* @param   {function} callback function name for callback
-* @returns {string} data Value from database or null.
+* @param   {Function} callback function name for callback
 */
 exports.getCache = function(key, callback){
 	// query database for data based on key with date within lifetime
 	
 	cacheDb.serialize(function() {
-		cacheDb.get('SELECT `key`, `data` FROM `cache` WHERE `key` == (?) AND date_updated > date("now", "-2 hours")', key, function(err,row){
+		cacheDb.get('SELECT `key`, `data` FROM `cache` WHERE `key` == (?) AND date_updated > date("now", ?)', key, cacheLifetime, function(err,row){
 			if( err || row == undefined ){
 				callback(err,null);
 			}else{
 				callback(err,row.data);
 			}
-	    	
-	    });
+		});
 	});
 };
 
@@ -49,7 +48,8 @@ exports.getCache = function(key, callback){
 * Sets the cache data based on a key.
 *
 * @param   {string} key Value for lookup in database.
-* @param   {function} callback function name for callback
+* @param   {string} data Value to be stored in cache.
+* @param   {Function} callback function name for callback
 */
 exports.setCache = function(key, data, callback){
 
@@ -68,20 +68,30 @@ exports.setCache = function(key, data, callback){
 
 /**
 * purgeCache
-* Invalidates all data in the cache.
+* removes all keys from cache
+*
+* @param   {Function} callback function name for callback
 */
-exports.purgeCache = function(){
-
-	cacheDb.serialize(function() { 
-		
-		var stmt = cacheDb.prepare('');
-
-		stmt.run( key, data );
-
-		stmt.finalize();
-
+exports.purgeCache = function(callback){
+	cacheDb.serialize(function() { 		
+		cacheDb.run('DELETE FROM `cache`', function(){
+			callback();	
+		});
 	});
+};
 
+/**
+* cleanCache
+* removes all keys from cache which are expired
+*
+* @param   {Function} callback function name for callback
+*/
+exports.cleanCache = function(callback){
+	cacheDb.serialize(function() { 		
+		cacheDb.run('DELETE FROM `cache` WHERE date_updated < datetime("now", ?)', cacheLifetime, function(){
+			callback();	
+		});
+	});
 };
 
 
@@ -89,43 +99,44 @@ exports.purgeCache = function(){
 * getKeys
 * Gets all the keys in the cache.
 *
-* @returns {Array} list of keys in cache.
+* @param   {Function} callback function name for callback
 */
-exports.getKeys = function(){
+exports.getKeys = function(callback){
 	var keys = [];
 	
 	cacheDb.serialize(function() {	
-		cacheDb.each("SELECT * FROM cache')", function(err, row) {
-			if ( ! err && row != undefined ){			
-				keys.push(row.key);
+		cacheDb.all('SELECT key FROM `cache`', function(err, rows) {
+			if ( err ){			
+				callback(err, null);
+			}else{
+				rows.forEach(function(row){
+					keys.push(row.key);
+				});
 			}
+			callback(err,keys);
 		});
-		
 	});
-	cacheDb.close();
-
-	return keys;
 };
 
 /**
 * getActiveKeys
 * Gets all the keys in the cache recently set.
 *
-* @returns {Array} list of keys in cache.
+* @param   {Function} callback function name for callback
 */
-exports.getActiveKeys = function(){
+exports.getActiveKeys = function(callback){
 	var keys = [];
 	
 	cacheDb.serialize(function() {	
-		cacheDb.each("SELECT * FROM cache WHERE date_updated < datetime('now', '-2 hours) ", function(err, row) {
-			if ( ! err && row != undefined ){			
-				keys.push(row.key);
+		cacheDb.all('SELECT key FROM `cache` WHERE date_updated > datetime("now", ?)', cacheLifetime, function(err, rows) {
+			if ( err ){			
+				callback(err, null);
+			}else{
+				rows.forEach(function(row){
+					keys.push(row.key);
+				});
 			}
+			callback(err,keys);
 		});
-		
 	});
-	cacheDb.close();
-
-	return keys;
-
 };
