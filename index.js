@@ -4,7 +4,7 @@
  * Copyright(c) 2017 Bradford Knowlton
  * MIT Licensed
  *
- * Version 1.1.3
+ * Version 1.1.4
  */
 
 'use strict';
@@ -55,7 +55,7 @@ exports.setCache = function(key, data, callback){
 
 	cacheDb.serialize(function() { 
 		
-		var stmt = cacheDb.prepare('INSERT OR REPLACE INTO `cache` (`ID`,`key`,`data`,`date_created`) VALUES ( (SELECT `ID` FROM `cache` WHERE `key` == (?)), (?), (?), COALESCE((SELECT `date_created` FROM `cache` WHERE `key` == (?)), datetime("now") ) );');
+		var stmt = cacheDb.prepare('INSERT OR REPLACE INTO `cache` (`ID`,`key`,`data`,`date_created`,`date_updated`) VALUES ( (SELECT `ID` FROM `cache` WHERE `key` == (?)), (?), (?), COALESCE((SELECT `date_created` FROM `cache` WHERE `key` == (?)), datetime("now") ), datetime("now") );');
 
 		stmt.run( key, key, data, key );
 
@@ -84,7 +84,8 @@ exports.purgeCache = function(callback){
 * purgeKey
 * removes a key from cache
 *
-* @param   {function} callback function name for callback
+* @param   {string} key Value for lookup in database.
+* @param   {Function} callback function name for callback
 */
 exports.purgeKey = function(key,callback){
 	cacheDb.serialize(function() { 		
