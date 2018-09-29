@@ -1,10 +1,10 @@
 /*!
- * SQLCacheDB 
+ * SQLCacheDB
  *
- * Copyright(c) 2017 Bradford Knowlton
+ * Copyright(c) 2018 Bradford Knowlton
  * MIT Licensed
  *
- * Version 1.1.4
+ * Version 1.2.1
  */
 
 'use strict';
@@ -31,7 +31,7 @@ exports.sqlCacheDb = function(){
 */
 exports.getCache = function(key, callback){
 	// query database for data based on key with date within lifetime
-	
+
 	cacheDb.serialize(function() {
 		cacheDb.get('SELECT `key`, `data` FROM `cache` WHERE `key` == (?) AND date_updated > date("now", ?)', key, cacheLifetime, function(err,row){
 			if( err || row == undefined ){
@@ -53,14 +53,14 @@ exports.getCache = function(key, callback){
 */
 exports.setCache = function(key, data, callback){
 
-	cacheDb.serialize(function() { 
-		
+	cacheDb.serialize(function() {
+
 		var stmt = cacheDb.prepare('INSERT OR REPLACE INTO `cache` (`ID`,`key`,`data`,`date_created`,`date_updated`) VALUES ( (SELECT `ID` FROM `cache` WHERE `key` == (?)), (?), (?), COALESCE((SELECT `date_created` FROM `cache` WHERE `key` == (?)), datetime("now") ), datetime("now") );');
 
 		stmt.run( key, key, data, key );
 
 		stmt.finalize();
-		
+
 		callback();
 
 	});
@@ -73,9 +73,9 @@ exports.setCache = function(key, data, callback){
 * @param   {Function} callback function name for callback
 */
 exports.purgeCache = function(callback){
-	cacheDb.serialize(function() { 		
+	cacheDb.serialize(function() {
 		cacheDb.run('DELETE FROM `cache`', function(){
-			callback();	
+			callback();
 		});
 	});
 };
@@ -88,9 +88,9 @@ exports.purgeCache = function(callback){
 * @param   {Function} callback function name for callback
 */
 exports.purgeKey = function(key,callback){
-	cacheDb.serialize(function() { 		
+	cacheDb.serialize(function() {
 		cacheDb.run('DELETE FROM `cache` WHERE `key` == ?', key, function(){
-			callback();	
+			callback();
 		});
 	});
 };
@@ -102,9 +102,9 @@ exports.purgeKey = function(key,callback){
 * @param   {Function} callback function name for callback
 */
 exports.cleanCache = function(callback){
-	cacheDb.serialize(function() { 		
+	cacheDb.serialize(function() {
 		cacheDb.run('DELETE FROM `cache` WHERE date_updated < datetime("now", ?)', cacheLifetime, function(){
-			callback();	
+			callback();
 		});
 	});
 };
@@ -118,10 +118,10 @@ exports.cleanCache = function(callback){
 */
 exports.getKeys = function(callback){
 	var keys = [];
-	
-	cacheDb.serialize(function() {	
+
+	cacheDb.serialize(function() {
 		cacheDb.all('SELECT key FROM `cache`', function(err, rows) {
-			if ( err ){			
+			if ( err ){
 				callback(err, null);
 			}else{
 				rows.forEach(function(row){
@@ -141,10 +141,10 @@ exports.getKeys = function(callback){
 */
 exports.getActiveKeys = function(callback){
 	var keys = [];
-	
-	cacheDb.serialize(function() {	
+
+	cacheDb.serialize(function() {
 		cacheDb.all('SELECT key FROM `cache` WHERE date_updated > datetime("now", ?)', cacheLifetime, function(err, rows) {
-			if ( err ){			
+			if ( err ){
 				callback(err, null);
 			}else{
 				rows.forEach(function(row){

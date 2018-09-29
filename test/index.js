@@ -12,7 +12,7 @@ cache.setCache('url','https://github.com', function(){
 		// eslint-disable-next-line no-console
 		console.log(data);
 	});
-	
+
 	cache.getCache('test3', function(err,data){
 		// eslint-disable-next-line no-console
 		console.log(data);
